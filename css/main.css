@@ -8,15 +8,17 @@ body{
 
 }
 .column {
+    box-shadow: 0px 4px 10px 0px rgba(255, 140, 105, 0.5);
     color: lightcoral;
     background: linear-gradient(to top, #FA8072,#FFE4E1 );
     border-radius: 30px;
     width: 30%;
 }
 .card {
+    box-shadow: 0px 10px 20px 0px rgba(255, 140, 105, 0.5);
     width: 64%;
     border-radius: 30px;
-    border: 3px solid #ffdcd8;
+    border: 3px solid #ffdcd1;
     padding-left: 6%;
     background-color: #ffffff;
     margin-left: 14%;

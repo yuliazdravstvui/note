@@ -1,8 +1,8 @@
 Vue.component('todo-item', {
     template: '\
         <li>\
-        {{ title }}\
-        <button v-on:click="$emit(\'remove\')">Delete</button>\
+            {{ title }}\
+            <button v-on:click="$emit(\'remove\')">Delete</button>\
         </li>\
         ',
     props: ['title']
@@ -38,10 +38,10 @@ Vue.component('columns', {
     methods: {
         addCard(column, customTitle) {
             const totalCards = this.newColumn.length + this.inProgressColumn.length + this.completedColumn.length;
-            // if (totalCards >= this.maxCards.newColumn + this.maxCards.inProgressColumn + this.maxCards.completedColumn) {
-            //     alert(`Достигнуто максимальное количество карточек во всех столбцах.`);
+            if (totalCards >= this.maxCards.newColumn + this.maxCards.inProgressColumn + this.maxCards.completedColumn) {
+                alert(`Достигнуто максимальное количество карточек во всех столбцах.`);
                 return;
-            // }
+            }
             if (this[column].length >= this.maxCards[column]) {
                 alert(`A lot of notes in column "${this.getColumnTitle(column)}".`);
                 return;
@@ -72,6 +72,7 @@ Vue.component('columns', {
                 inProgressColumn: this.inProgressColumn,
                 completedColumn: this.completedColumn
             }));
+
         },
         loadFromLocalStorage() {
             const data = JSON.parse(localStorage.getItem('todo-columns'));
@@ -132,7 +133,7 @@ Vue.component('column', {
         <div class="column">
             <h2>{{ title }}</h2>
             <form action="" v-if="title === 'New'">
-                <input type="text" v-model="customTitle">
+                <input class="vvod" type="text" v-model="customTitle">
                 <button class="btn" v-if="title === 'New'" @click="addCardWithCustomTitle">Add note</button>
             </form>
             <card v-for="(card, index) in cards" :key="index" :card="card" @remove-card="removeCard(index)" @save-local-storage="saveToLocalStorage"  @move-card-to-in-progress="moveCardToInProgress" @move-card-to-completed="moveCardToCompleted"></card>
