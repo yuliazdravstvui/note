@@ -38,16 +38,16 @@ Vue.component('columns', {
     methods: {
         addCard(column, customTitle) {
             const totalCards = this.newColumn.length + this.inProgressColumn.length + this.completedColumn.length;
-            if (totalCards >= this.maxCards.newColumn + this.maxCards.inProgressColumn + this.maxCards.completedColumn) {
-                alert(`Достигнуто максимальное количество карточек во всех столбцах.`);
+            // if (totalCards >= this.maxCards.newColumn + this.maxCards.inProgressColumn + this.maxCards.completedColumn) {
+            //     alert(`Достигнуто максимальное количество карточек во всех столбцах.`);
                 return;
-            }
+            // }
             if (this[column].length >= this.maxCards[column]) {
-                alert(`Достигнуто максимальное количество карточек в столбце "${this.getColumnTitle(column)}".`);
+                alert(`A lot of notes in column "${this.getColumnTitle(column)}".`);
                 return;
             }
             if (column !== 'newColumn') {
-                alert(`Можно добавлять заметки только в столбец "New".`);
+                alert(`u can add notes only in column "New".`);
                 return;
             }
             const newCard = {
@@ -100,7 +100,7 @@ Vue.component('columns', {
             const index = this.newColumn.indexOf(card);
             if (index !== -1) {
                 if (this.inProgressColumn.length >= this.maxCards.inProgressColumn) {
-                    alert('Столбец "In process" уже содержит максимальное количество карточек.');
+                    alert('Column "In process" has a lot of notes yet.');
                     return;
                 }
 
