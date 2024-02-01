@@ -152,72 +152,78 @@ Vue.component('column', {
         },
         saveToLocalStorage() {
             this.$emit('save-local-storage');
-            
+
+        },
+        moveCardToInProgress(card) {
+            this.$emit('move-card-to-in-progress', card);
+        },
+        moveCardToCompleted(card) {
+            this.$emit('move-card-to-completed', card);
         }
     }
 });
 
 Vue.component('card', {
-    props: ['card'],
+    props: ['card', 'isFirstColumnLocked'],
     template: `
-        <div class="card">
-            <h3>{{ card.title }}</h3>
-            <ul>
-                <li v-for="(item, index) in card.items" :key="index">
-                    <input type="text" v-model="item.text" :disabled="!item.editing">
-                    <input type="checkbox" v-model="item.completed" @change="saveToLocalStorage">
-                    <button class="btn" @click="saveItem(index)" v-if="item.editing">Save</button>
-                    <button class="btn" @click="editItem(index)" v-else>Refactor</button>
-                    <button class="btn" @click="removeItem(index)">Delete</button>
-                </li>
-                <li v-if="card.items.length < 5 && card.status !== 'Done'">
-                    <button class="btn" @click="addItem">Add point</button>
-                </li>
-            </ul>
-            <button class="btn" v-if="card.status !== 'Done'" @click="removeCard">Delete note</button>
-            <p v-if="card.status === 'Done'">Date of the end: {{ card.completionDate }}</p>
-        </div>
-        `,
+      <div class="card">
+      <h3>{{ card.title }}</h3>
+      <ul>
+        <li v-for="(item, index) in card.items" :key="index">
+          <input type="checkbox" v-model="item.completed" @change="saveToLocalStorage" :disabled="card.status === 'Done' || isFirstColumnLocked">
+          <input type="text" v-model="item.text" @input="saveToLocalStorage" :disabled="!item.editing || card.status === 'Done' || (card.status === 'В процессе' && isFirstColumnLocked)">
+          <button class="btn" @click="editItem(index)" v-else-if="!item.editing && card.status !== 'Done' && !isFirstColumnLocked">Редактировать</button>
+          <button class="btn" @click="removeItem(index)" v-if="card.items.length > 3 && !isFirstColumnLocked && card.status !== 'Done'">Удалить</button>
+        </li>
+
+<!--        <li v-if="card.items.length < 5 && card.status !== 'Done' && !isFirstColumnLocked">-->
+<!--          <button class="btn" @click="addItem">Добавить пункт</button>-->
+        </li>
+      </ul> 
+      <button class="btn" v-if="card.status !== 'Done' && !isFirstColumnLocked" @click="removeCard">Удалить заметку</button>
+      <p v-if="card.status === 'Done'">Дата завершения: {{ card.completionDate }}</p>
+      </div>
+    `,
     methods: {
         addItem() {
-            if (this.card.items.length < 5) {
-                this.card.items.push({ text: '', completed: false, editing: true });
+            if (this.card.items.length < 5 && this.card.items.length >= 3 && !this.isFirstColumnLocked) {
+                this.card.items.push({text: '', completed: false, editing: true});
                 this.saveToLocalStorage();
             } else {
-                alert('Max points');
+                alert('Слишком много пунктов.');
             }
         },
         removeItem(index) {
-            this.card.items.splice(index, 1);
-            this.saveToLocalStorage();
+            if (this.card.items.length > 3 && !this.isFirstColumnLocked && this.card.status !== 'Done') {
+                this.card.items.splice(index, 1);
+                this.saveToLocalStorage();
+            }
         },
         removeCard() {
-            this.$emit('remove-card');
+            if (!this.isFirstColumnLocked && this.card.status !== 'Done') {
+                this.$emit('remove-card');
+            } else {
+                alert('Нельзя удалять карточки в столбце "Выполненные" или если первый столбец заблокирован.');
+            }
         },
         saveItem(index) {
-            this.card.items[index].editing = false;
-            this.saveToLocalStorage();
+            if (this.card.status !== 'Done' && !this.isFirstColumnLocked) {
+                this.card.items[index].editing = false;
+                this.saveToLocalStorage();
+            }
         },
         editItem(index) {
-            this.card.items[index].editing = true;
+            if (this.card.status !== 'Done' && !this.isFirstColumnLocked) {
+                this.card.items[index].editing = true;
+            }
         },
         saveToLocalStorage() {
             this.checkCardStatus();
             this.$emit('save-local-storage');
-        },
-        checkCardStatus() {
-            const completedItems = this.card.items.filter(item => item.completed).length;
-            const totalItems = this.card.items.length;
-            if (completedItems > 0 && completedItems === totalItems) {
-                this.card.status = 'Done';
-                this.card.completionDate = new Date().toLocaleString();
-            } else if (completedItems > totalItems / 2) {
-                this.card.status = 'In process';
-            } else {
-                this.card.status = 'New';
-            }
         }
     }
+        // checkCardStatus() {
+
 });
 
 new Vue({
@@ -227,6 +233,7 @@ new Vue({
             newColumn: [],
             inProgressColumn: [],
             completedColumn: [],
+            isFirstColumnLocked: false
         }
     },
     created() {
