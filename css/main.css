@@ -33,11 +33,11 @@ li {
     color:#214133;
     list-style-type: none;
 }
-li::before {
-    margin-right: 5px;
-    content: "❤";
-    color:#f16092;
-}
+/*li::before {*/
+/*    margin-right: 5px;*/
+/*    content: "❤";*/
+/*    color:#f16092;*/
+/*}*/
 body {
     padding: 15px 0;
 }
