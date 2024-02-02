@@ -35,6 +35,7 @@ Vue.component('columns', {
         this.loadFromLocalStorage();
         this.checkLock();
     },
+    props: ['completionPercentage'],
 
     methods: {
         addCard(column, customTitle) {
@@ -123,7 +124,7 @@ Vue.component('columns', {
             this.checkLock();
         },
         checkLock() {
-            if (this.inProgressColumn.length >= this.maxCards.inProgressColumn) {
+            if ((this.inProgressColumn.length >= this.maxCards.inProgressColumn)&& (this.completionPercentage >50 && this.card.status === 'New')) {
                 this.locked = true;
             } else {
                 this.locked = false;
